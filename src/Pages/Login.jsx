@@ -1,60 +1,97 @@
 import { useState } from "react";
-import { TextField, Button, IconButton, InputAdornment, Card, CardContent, Typography } from "@mui/material";
+import {
+  TextField,
+  Button,
+  IconButton,
+  InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+} from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useNavigate, Link } from "react-router-dom"; // ✅ Import Link
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(true);
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    const { email, password } = formData;
+    if (!email || !password) {
+      setError("Please enter valid inputs");
+      return;
+    }
+    setError("");
+    navigate("/users");
+  };
 
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-100">
-      <Card className="w-full max-w-sm shadow-xl rounded-2xl">
-        <CardContent className="p-6">
-          <Typography variant="h5" className="text-center font-semibold text-gray-800 mb-4">
-            Welcome Back
+    <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
+      <DialogTitle className="text-center text-gray-800 font-semibold">
+        Welcome Back
+      </DialogTitle>
+      <DialogContent className="p-6">
+        {error && (
+          <Typography className="text-red-500 text-sm text-center mb-2">
+            {error}
           </Typography>
-          
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            variant="outlined"
-            margin="normal"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          />
+        )}
 
-          <TextField
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            fullWidth
-            variant="outlined"
-            margin="normal"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={togglePasswordVisibility} edge="end">
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
+        <TextField
+          label="Email"
+          type="email"
+          fullWidth
+          variant="outlined"
+          margin="normal"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        />
 
-          <Button variant="contained" color="primary" fullWidth className="mt-4 py-2 text-lg rounded-lg">
-            Login
-          </Button>
-
-          <Typography variant="body2" className="text-center text-gray-500 p-3 mt-4">
-            Don't have an account? <span className="text-blue-600 cursor-pointer">Sign up</span>
-          </Typography>
-        </CardContent>
-      </Card>
-    </div>
+        <TextField
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          fullWidth
+          variant="outlined"
+          margin="normal"
+          value={formData.password}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={togglePasswordVisibility} edge="end">
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </DialogContent>
+      <DialogActions className="flex flex-col p-4">
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={handleLogin}
+        >
+          Login
+        </Button>
+        <Typography variant="body2" className="text-center text-gray-500 mt-3">
+          Don't have an account?{" "}
+          <Link to="/NotFound" className="text-blue-600 font-medium">
+            Sign up
+          </Link>
+        </Typography>
+      </DialogActions>
+    </Dialog>
   );
 };
 

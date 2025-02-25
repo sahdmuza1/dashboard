@@ -10,16 +10,25 @@ import {
   CardContent,
   CardHeader,
   Typography,
+  IconButton,
+  Avatar,
+  Tooltip,
 } from "@mui/material";
+import { Edit, Delete, PersonAdd } from "@mui/icons-material";
+import Sidebar from "../Components/Sidebar";
+import Navbar from "../Components/Navbar";
 
 const Users = () => {
   const [users, setUsers] = useState([
-    { id: 1, name: "Sahad", email: "sahd@gmail.com" },
+    { id: crypto.randomUUID(), name: "Sahad", email: "sahd@gmail.com" },
+    { id: crypto.randomUUID(), name: "Kendrick", email: "lamar@gmail.com" },
+    { id: crypto.randomUUID(), name: "Sah", email: "sahd@gmail.com" },
   ]);
 
   const [modalType, setModalType] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [formData, setFormData] = useState({ name: "", email: "" });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const openModal = (type, user = null) => {
     setModalType(type);
@@ -51,24 +60,56 @@ const Users = () => {
   };
 
   return (
-    <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {users.map((user) => (
-        <Card key={user.id} className="shadow-lg rounded-lg">
-          <CardHeader title={user.name} subheader={user.email} />
-          <CardContent className="flex justify-between">
-            <Button variant="outlined" color="warning" size="small" onClick={() => openModal("edit", user)}>
-              Edit
+    <div className="h-screen flex flex-col bg-gray-50">
+      {/* ✅ Fixed Navbar */}
+      <div className="fixed w-full z-10 bg-white shadow-sm">
+        <Navbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+      </div>
+
+      <div className="flex flex-1 pt-16">
+        {/* ✅ Sidebar */}
+        <div className={`transition-all duration-300 ${isSidebarOpen ? "w-60" : "w-0 hidden"} md:block bg-white shadow-md`}>
+          <Sidebar />
+        </div>
+
+        {/* ✅ Users Section */}
+        <div className="flex-1 p-10 overflow-auto">
+          
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {users.map((user) => (
+              <Card key={user.id} className="shadow-md hover:shadow-xl rounded-xl transition-shadow bg-white border border-gray-200 p-6">
+                <CardHeader
+                  avatar={<Avatar>{user.name.charAt(10)}</Avatar>}
+                  title={<Typography className="font-medium text-gray-800">{user.name}</Typography>}
+                  subheader={<Typography className="text-gray-600">{user.email}</Typography>}
+                />
+                {/* ✅ Buttons at Bottom Left and Right */}
+                <CardContent className="mt-auto flex justify-between px-4 pb-4">
+                  <Tooltip title="Edit">
+                    <IconButton color="primary" onClick={() => openModal("edit", user)}>
+                      <Edit />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <IconButton color="error" onClick={() => openModal("delete", user)}>
+                      <Delete />
+                    </IconButton>
+                  </Tooltip>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="flex justify-center mt-10">
+            <Button variant="contained" color="primary" startIcon={<PersonAdd />} onClick={() => openModal("add")}>
+              Add User
             </Button>
-            <Button variant="outlined" color="error" size="small" onClick={() => openModal("delete", user)}>
-              Delete
-            </Button>
-          </CardContent>
-        </Card>
-      ))}
-      <Card className="shadow-lg rounded-lg flex items-center justify-center p-6 cursor-pointer" onClick={() => openModal("add")}>      
-        <Typography variant="h6" color="primary">+ Add User</Typography>
-      </Card>
-      
+          </div>
+        </div>
+      </div>
+
+      {/* ✅ Modal Dialog */}
       <Dialog open={!!modalType} onClose={closeModal} maxWidth="sm" fullWidth>
         <DialogTitle>
           {modalType === "add" ? "Add New User" : modalType === "edit" ? "Edit User" : "Delete User"}
@@ -84,10 +125,10 @@ const Users = () => {
           )}
         </DialogContent>
         <DialogActions>
-          {modalType === "add" && <Button onClick={handleAddUser} color="primary" variant="outlined">Add</Button>}
-          {modalType === "edit" && <Button onClick={handleEditUser} color="success" variant="outlined">Save</Button>}
-          <Button onClick={closeModal} color="secondary" variant="outlined">Cancel</Button>
-          {modalType === "delete" && <Button onClick={handleDeleteUser} color="error" variant="outlined">Delete</Button>}
+          {modalType === "add" && <Button onClick={handleAddUser} color="primary">Add</Button>}
+          {modalType === "edit" && <Button onClick={handleEditUser} color="success" >Save</Button>}
+          <Button onClick={closeModal} color="secondary">Cancel</Button>
+          {modalType === "delete" && <Button onClick={handleDeleteUser} color="error">Delete</Button>}
         </DialogActions>
       </Dialog>
     </div>

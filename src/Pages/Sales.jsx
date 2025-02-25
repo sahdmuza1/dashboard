@@ -1,31 +1,53 @@
 import { useState } from "react";
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Card, CardContent, Typography, CardActions } from "@mui/material";
-import { ShoppingCart, Edit, Delete } from "@mui/icons-material";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Card,
+  CardContent,
+  Typography,
+  CardActions,
+  Grid,
+  MenuItem,
+} from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
+import { Edit, Delete, ShoppingCart, PersonAdd } from "@mui/icons-material";
+import Sidebar from "../Components/Sidebar";
+import Navbar from "../Components/Navbar";
 
 const Sales = () => {
   const [sales, setSales] = useState([
-    { id: 1, product: "Laptop", amount: 50000, date: "2025-02-22" },
+    { id: uuidv4(), product: "Mobile", category: "Electronics", amount: 30000, date: "2024-12-02", status: "Completed" },
+    { id: uuidv4(), product: "Laptop", category: "Electronics", amount: 50000, date: "2025-02-22", status: "Pending" },
+    { id: uuidv4(), product: "Mobile", category: "Electronics", amount: 30000, date: "2024-1-10", status: "Completed" },
   ]);
 
   const [modalType, setModalType] = useState(null);
   const [selectedSale, setSelectedSale] = useState(null);
-  const [formData, setFormData] = useState({ product: "", amount: "", date: "" });
+  const [formData, setFormData] = useState({ product: "", category: "", amount: "", date: "", status: "Pending" });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const openModal = (type, sale = null) => {
     setModalType(type);
     setSelectedSale(sale);
-    setFormData(sale ? { product: sale.product, amount: sale.amount, date: sale.date } : { product: "", amount: "", date: "" });
+    setFormData(
+      sale ? { product: sale.product, category: sale.category, amount: sale.amount, date: sale.date, status: sale.status }
+           : { product: "", category: "", amount: "", date: "", status: "Pending" }
+    );
   };
 
   const closeModal = () => {
     setModalType(null);
     setSelectedSale(null);
-    setFormData({ product: "", amount: "", date: "" });
+    setFormData({ product: "", category: "", amount: "", date: "", status: "Pending" });
   };
 
   const handleAddSale = () => {
-    if (formData.product && formData.amount && formData.date) {
-      setSales([...sales, { id: Date.now(), ...formData }]);
+    if (formData.product && formData.category && formData.amount && formData.date) {
+      setSales([...sales, { id: uuidv4(), ...formData }]);
       closeModal();
     }
   };
@@ -41,85 +63,76 @@ const Sales = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6">Sales Overview</h2>
-
-      <div className="flex justify-end mb-6">
-        <Button variant="contained" color="primary" size="large" onClick={() => openModal("add")}>
-          + Add Sale
-        </Button>
+    <div className="h-screen flex flex-col bg-gray-50">
+      <div className="fixed w-full z-10 shadow-md bg-white">
+        <Navbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
       </div>
 
-      {/* Card Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sales.length > 0 ? (
-          sales.map((sale) => (
-            <Card key={sale.id} className="shadow-lg rounded-xl hover:shadow-2xl transition-shadow bg-white">
-              <CardContent>
-                <div className="flex items-center space-x-4 mb-3">
-                  <ShoppingCart className="text-blue-500" fontSize="large" />
-                  <Typography variant="h6" className="font-semibold text-gray-900">{sale.product}</Typography>
-                </div>
-                <Typography variant="body1" className="text-gray-700 font-medium">Amount: <span className="text-blue-600 font-bold">₹{sale.amount}</span></Typography>
-                <Typography variant="body2" className="text-gray-500">Date: {sale.date}</Typography>
-              </CardContent>
-              <CardActions className="flex justify-between px-4 pb-4">
-                <Button startIcon={<Edit />} variant="outlined" color="warning" size="small" onClick={() => openModal("edit", sale)}>
-                  Edit
-                </Button>
-                <Button startIcon={<Delete />} variant="outlined"color="error" size="small" onClick={() => openModal("delete", sale)}>
-                  Delete
-                </Button>
-              </CardActions>
-            </Card>
-          ))
-        ) : (
-          <Typography variant="body1" className="text-gray-500 text-center col-span-full">No sales records found</Typography>
-        )}
+      <div className="flex flex-1 pt-16">
+        <div className={`transition-all duration-300 ${isSidebarOpen ? "w-60" : "w-0 hidden"} md:block`}>
+          <Sidebar />
+        </div>
+
+        <div className="flex-1 p-8 overflow-auto mt-5">
+          <Grid container spacing={3}>
+            {sales.map((sale) => (
+              <Grid item xs={12} sm={6} md={4} key={sale.id}>
+                <Card className="shadow-md hover:shadow-xl rounded-xl transition-shadow bg-white border border-gray-200 p-6">
+                  <div className="flex justify-between items-center">
+                    <ShoppingCart className="text-blue-500" fontSize="large" />
+                    <Typography variant="h6" className="font-semibold text-gray-800">{sale.product}</Typography>
+                  </div>
+                  <CardContent>
+                    <Typography variant="body2">Category: {sale.category}</Typography>
+                    <Typography variant="body1">Amount: ₹{sale.amount}</Typography>
+                    <Typography variant="body2">Date: {sale.date}</Typography>
+                    <Typography variant="body2" className={sale.status === "Completed" ? "text-green-600" : "text-orange-600"}>
+                      {sale.status}
+                    </Typography>
+                  </CardContent>
+                  <CardActions className="flex justify-between">
+                    <Button startIcon={<Edit />}  color="primary" onClick={() => openModal("edit", sale)}>
+                     
+                    </Button>
+                    <Button startIcon={<Delete />} color="error" onClick={() => openModal("delete", sale)}>
+                    
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+          <div className="flex justify-center mt-10">
+            <Button variant="contained" color="primary" startIcon={<PersonAdd />} onClick={() => openModal("add")}>
+              Add Sale
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Dialog for Add/Edit/Delete */}
       <Dialog open={!!modalType} onClose={closeModal} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {modalType === "add" ? "Add New Sale" : modalType === "edit" ? "Edit Sale" : "Delete Sale"}
-        </DialogTitle>
+        <DialogTitle>{modalType === "add" ? "Add Sale" : modalType === "edit" ? "Edit Sale" : "Delete Sale"}</DialogTitle>
         <DialogContent>
           {modalType !== "delete" ? (
             <>
-              <TextField
-                label="Product"
-                fullWidth
-                margin="dense"
-                value={formData.product}
-                onChange={(e) => setFormData({ ...formData, product: e.target.value })}
-              />
-              <TextField
-                label="Amount (₹)"
-                type="number"
-                fullWidth
-                margin="dense"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-              />
-              <TextField
-                label="Date"
-                type="date"
-                fullWidth
-                margin="dense"
-                InputLabelProps={{ shrink: true }}
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              />
+              <TextField label="Product" fullWidth margin="dense" value={formData.product} onChange={(e) => setFormData({ ...formData, product: e.target.value })} />
+              <TextField label="Category" fullWidth margin="dense" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} />
+              <TextField label="Amount" fullWidth margin="dense" type="number" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} />
+              <TextField label="Date" fullWidth margin="dense" type="date" InputLabelProps={{ shrink: true }} value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} />
+              <TextField select label="Status" fullWidth margin="dense" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
+                <MenuItem value="Pending">Pending</MenuItem>
+                <MenuItem value="Completed">Completed</MenuItem>
+              </TextField>
             </>
           ) : (
             <Typography>Are you sure you want to delete {selectedSale?.product}?</Typography>
           )}
         </DialogContent>
         <DialogActions>
-          {modalType === "add" && <Button onClick={handleAddSale} color="primary" variant="outlined">Add</Button>}
-          {modalType === "edit" && <Button onClick={handleEditSale} color="success" variant="outlined">Save</Button>}
-          <Button onClick={closeModal} color="secondary" variant="outlined">Cancel</Button>
-          {modalType === "delete" && <Button onClick={handleDeleteSale} color="error" variant="outlined">Delete</Button>}
+          {modalType === "add" && <Button onClick={handleAddSale} color="primary" >Add</Button>}
+          {modalType === "edit" && <Button onClick={handleEditSale} color="success" >Save</Button>}
+          <Button onClick={closeModal} color="secondary">Cancel</Button>
+          {modalType === "delete" && <Button onClick={handleDeleteSale} color="error" >Delete</Button>}
         </DialogActions>
       </Dialog>
     </div>

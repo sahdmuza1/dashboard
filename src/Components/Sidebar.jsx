@@ -1,25 +1,48 @@
 import { Link } from "react-router-dom";
+import { FiUsers, FiDollarSign, FiBarChart2 } from "react-icons/fi";
 import logo from "../assets/logo.jpg";
 
 const Sidebar = () => {
   return (
-    <div className="fixed top-0 left-0 h-screen w-60 bg-gray-800 text-white p-5 flex flex-col shadow-lg z-50">
+    <div className="fixed top-0 left-0 h-screen w-64 bg-gray-900 text-white p-5 flex flex-col shadow-xl z-50">
       {/* Logo & Title */}
-      <div className="flex items-center space-x-3 mb-6">
-        <img src={logo} alt="Logo" className="h-10 w-10 object-cover rounded-full" />
+      <div className="flex items-center space-x-3 mb-8">
+        <img src={logo} alt="Logo" className="h-12 w-12 object-cover rounded-full" />
+        
       </div>
 
-      <ul className="space-y-3 flex-1">
-        <Link to="/users" className="hover:bg-gray-700 hover:text-blue-400 font-extrabold p-2 rounded uppercase block">
-          Users
-        </Link>
-        <Link to="/sales" className="hover:bg-gray-700 hover:text-blue-400 font-extrabold p-2 rounded uppercase block">
-          Sales
-        </Link>
-        <Link to="/revenue" className="hover:bg-gray-700 hover:text-blue-400 font-extrabold p-2 rounded uppercase block">
-          Revenue
-        </Link>
-      </ul>
+      {/* Navigation Links */}
+      <nav className="flex-1">
+        <ul className="space-y-4">
+          <li>
+            <Link
+              to="/users"
+              className="flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 hover:bg-gray-700 hover:text-blue-400"
+            >
+              <FiUsers className="text-lg" />
+              <span className="text-sm font-semibold uppercase">Users</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/sales"
+              className="flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 hover:bg-gray-700 hover:text-blue-400"
+            >
+              <FiDollarSign className="text-lg" />
+              <span className="text-sm font-semibold uppercase">Sales</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/revenue"
+              className="flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 hover:bg-gray-700 hover:text-blue-400"
+            >
+              <FiBarChart2 className="text-lg" />
+              <span className="text-sm font-semibold uppercase">Revenue</span>
+            </Link>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 };
