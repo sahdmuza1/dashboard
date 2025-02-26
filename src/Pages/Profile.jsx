@@ -12,7 +12,8 @@ import {
   IconButton,
 } from "@mui/material";
 import { Edit, Save, Cancel, CloudUpload } from "@mui/icons-material";
-import profileImage from "../assets/person.jpg";
+
+import profileImage from "../assets/Person.jpg";
 
 export default function ProfileModal({ open, onClose }) {
   const [formData, setFormData] = useState({
@@ -130,30 +131,15 @@ export default function ProfileModal({ open, onClose }) {
       <DialogActions sx={{ p: 2 }}>
         {editMode ? (
           <>
-            <Button
-            
-              color="primary"
-              
-              onClick={handleSave}
-            >
+            <Button color="primary" onClick={handleSave}>
               Save
             </Button>
-            <Button
-             
-              color="secondary"
-              
-              onClick={handleCancel}
-            >
+            <Button color="secondary" onClick={handleCancel}>
               Cancel
             </Button>
           </>
         ) : (
-          <Button
-           
-            color="primary"
-            
-            onClick={() => setEditMode(true)}
-          >
+          <Button color="primary" onClick={() => setEditMode(true)}>
             Edit
           </Button>
         )}
